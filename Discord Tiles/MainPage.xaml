@@ -362,8 +362,9 @@
                                                     </Style>
                                                 </ComboBox.ItemContainerStyle>
 
-                                                <controls:ImageEx Source="Assets/blizzard_logo_mini1.png" Width="16" Height="16" IsCacheEnabled="True"/>
-                                                <controls:ImageEx Source="Assets/blizzard_logo_mini2.png" Width="16" Height="16" IsCacheEnabled="True"/>
+                                                <controls:ImageEx Source="Assets/discord_logo_mini1.png" Width="16" Height="16" IsCacheEnabled="True"/>
+                                                <controls:ImageEx Source="Assets/discord_logo_mini2.png" Width="16" Height="16" IsCacheEnabled="True"/>
+                                                <controls:ImageEx Source="Assets/discord_logo_mini3.png" Width="16" Height="16" IsCacheEnabled="True"/>
                                             </ComboBox>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
