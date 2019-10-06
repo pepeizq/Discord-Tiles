@@ -258,4 +258,22 @@
   <data name="TileWide.Text" xml:space="preserve">
     <value>Wide Tile</value>
   </data>
+  <data name="ConfigTileMode1.Content" xml:space="preserve">
+    <value>Show Installed Games</value>
+  </data>
+  <data name="ConfigTileMode2.Content" xml:space="preserve">
+    <value>Show Imported Games</value>
+  </data>
+  <data name="ConfigFolderMessage2.Text" xml:space="preserve">
+    <value>Add the folder C:\Users\[your user]\AppData\Roaming\discord\Local Storage\leveldb</value>
+  </data>
+  <data name="ConfigCleanCache.Text" xml:space="preserve">
+    <value>Clear Cache</value>
+  </data>
+  <data name="ConfigFolderHowAdd.Content" xml:space="preserve">
+    <value>How to unlock</value>
+  </data>
+  <data name="ConfigFolderWarning.Text" xml:space="preserve">
+    <value>Depending on the Windows configuration the folder may be hidden</value>
+  </data>
 </root>
