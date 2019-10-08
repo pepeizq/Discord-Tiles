@@ -22,8 +22,11 @@ Module Discord
         Dim frame As Frame = Window.Current.Content
         Dim pagina As Page = frame.Content
 
-        Dim pr As ProgressRing = pagina.FindName("prTiles")
-        pr.Visibility = Visibility.Visible
+        Dim spProgreso As StackPanel = pagina.FindName("spProgreso")
+        spProgreso.Visibility = Visibility.Visible
+
+        Dim tbProgreso As TextBlock = pagina.FindName("tbProgreso")
+        tbProgreso.Text = String.Empty
 
         Dim cbTiles As ComboBox = pagina.FindName("cbConfigModosTiles")
         cbTiles.IsEnabled = False
@@ -70,6 +73,7 @@ Module Discord
             If Not carpeta Is Nothing Then
                 Dim carpetasJuegos As IReadOnlyList(Of StorageFolder) = Await carpeta.GetFoldersAsync()
 
+                Dim k As Integer = 0
                 For Each carpetaJuego As StorageFolder In carpetasJuegos
                     Dim ficheros As IReadOnlyList(Of StorageFile) = Await carpetaJuego.GetFilesAsync()
 
@@ -153,6 +157,9 @@ Module Discord
                             End If
                         End If
                     Next
+
+                    tbProgreso.Text = k.ToString + "/" + carpetasJuegos.Count.ToString
+                    k += 1
                 Next
 
                 If listaJuegos.Count > 0 Then
@@ -198,7 +205,9 @@ Module Discord
 
                             Dim i As Integer = 0
                             While i < 1000
-                                If lineas.Contains(ChrW(34) + "distributor" + ChrW(34) + ":" + ChrW(34) + "steam" + ChrW(34)) Then
+                                If Not lineas.Contains(ChrW(34) + "distributor" + ChrW(34) + ":" + ChrW(34) + "steam" + ChrW(34)) Then
+                                    Exit While
+                                Else
                                     Dim temp, temp2, temp3 As String
                                     Dim int, int2, int3 As Integer
 
@@ -279,6 +288,8 @@ Module Discord
                                         End If
                                     End If
                                 End If
+
+                                tbProgreso.Text = i.ToString
                                 i += 1
                             End While
                         End If
@@ -295,7 +306,7 @@ Module Discord
 
         Await helper.SaveFileAsync(Of List(Of Tile))("juegos" + modo.ToString, listaJuegos)
 
-        pr.Visibility = Visibility.Collapsed
+        spProgreso.Visibility = Visibility.Collapsed
 
         Dim panelNoJuegos As Grid = pagina.FindName("panelAvisoNoJuegos")
         Dim gridSeleccionar As Grid = pagina.FindName("gridSeleccionarJuego")
