@@ -11,6 +11,8 @@ Imports Windows.UI.Xaml.Media.Animation
 
 Module Discord
 
+    Public anchoColumna As Integer = 306
+
     Public Async Sub Generar(boolBuscarCarpeta As Boolean)
 
         Dim modo As Integer = ApplicationData.Current.LocalSettings.Values("modo_tiles")
@@ -24,6 +26,9 @@ Module Discord
 
         Dim spProgreso As StackPanel = pagina.FindName("spProgreso")
         spProgreso.Visibility = Visibility.Visible
+
+        Dim pbProgreso As ProgressBar = pagina.FindName("pbProgreso")
+        pbProgreso.Value = 0
 
         Dim tbProgreso As TextBlock = pagina.FindName("tbProgreso")
         tbProgreso.Text = String.Empty
@@ -40,7 +45,10 @@ Module Discord
         Dim botonCache As Button = pagina.FindName("botonConfigLimpiarCache")
         botonCache.IsEnabled = False
 
-        Dim gv As GridView = pagina.FindName("gridViewTiles")
+        Dim gridSeleccionarJuego As Grid = pagina.FindName("gridSeleccionarJuego")
+        gridSeleccionarJuego.Visibility = Visibility.Collapsed
+
+        Dim gv As GridView = pagina.FindName("gvTiles")
         gv.Items.Clear()
 
         Dim listaJuegos As New List(Of Tile)
@@ -133,10 +141,18 @@ Module Discord
                                                 Dim imagenGrande As String = String.Empty
 
                                                 Try
-                                                    imagenGrande = Await Cache.DescargarImagen("https://steamcdn-a.akamaihd.net/steam/apps/" + idSteam + "/capsule_616x353.jpg", idSteam, "grande")
+                                                    imagenGrande = Await Cache.DescargarImagen("https://steamcdn-a.akamaihd.net/steam/apps/" + idSteam + "/library_600x900.jpg", idSteam, "grande")
                                                 Catch ex As Exception
 
                                                 End Try
+
+                                                If imagenGrande = String.Empty Then
+                                                    Try
+                                                        imagenGrande = Await Cache.DescargarImagen("https://steamcdn-a.akamaihd.net/steam/apps/" + idSteam + "/capsule_616x353.jpg", idSteam, "grande")
+                                                    Catch ex As Exception
+
+                                                    End Try
+                                                End If
 
                                                 Dim imagenIcono As String = String.Empty
 
@@ -158,6 +174,7 @@ Module Discord
                         End If
                     Next
 
+                    pbProgreso.Value = CInt((100 / carpetasJuegos.Count) * k)
                     tbProgreso.Text = k.ToString + "/" + carpetasJuegos.Count.ToString
                     k += 1
                 Next
@@ -289,6 +306,7 @@ Module Discord
                                     End If
                                 End If
 
+                                pbProgreso.Value = i.ToString
                                 tbProgreso.Text = i.ToString
                                 i += 1
                             End While
@@ -308,40 +326,40 @@ Module Discord
 
         spProgreso.Visibility = Visibility.Collapsed
 
-        Dim panelNoJuegos As Grid = pagina.FindName("panelAvisoNoJuegos")
-        Dim gridSeleccionar As Grid = pagina.FindName("gridSeleccionarJuego")
+        Dim gridTiles As Grid = pagina.FindName("gridTiles")
+        Dim gridAvisoNoJuegos As Grid = pagina.FindName("gridAvisoNoJuegos")
 
         If listaJuegos.Count > 0 Then
-            panelNoJuegos.Visibility = Visibility.Collapsed
-            gridSeleccionar.Visibility = Visibility.Visible
-
-            gv.Visibility = Visibility.Visible
+            gridTiles.Visibility = Visibility.Visible
+            gridAvisoNoJuegos.Visibility = Visibility.Collapsed
+            gridSeleccionarJuego.Visibility = Visibility.Visible
 
             listaJuegos.Sort(Function(x, y) x.Titulo.CompareTo(y.Titulo))
 
             gv.Items.Clear()
 
             For Each juego In listaJuegos
+                Dim panel As New DropShadowPanel With {
+                    .Margin = New Thickness(5, 5, 5, 5),
+                    .ShadowOpacity = 0.9,
+                    .BlurRadius = 5
+                }
+
                 Dim boton As New Button
 
-                Dim imagen As New ImageEx
-
-                Try
-                    imagen.Source = juego.ImagenAncha
-                Catch ex As Exception
-
-                End Try
-
-                imagen.IsCacheEnabled = True
-                imagen.Stretch = Stretch.UniformToFill
-                imagen.Padding = New Thickness(0, 0, 0, 0)
+                Dim imagen As New ImageEx With {
+                    .Source = juego.ImagenAncha,
+                    .IsCacheEnabled = True,
+                    .Stretch = Stretch.UniformToFill,
+                    .Padding = New Thickness(0, 0, 0, 0)
+                }
 
                 boton.Tag = juego
                 boton.Content = imagen
                 boton.Padding = New Thickness(0, 0, 0, 0)
-                boton.BorderThickness = New Thickness(1, 1, 1, 1)
-                boton.BorderBrush = New SolidColorBrush(Colors.Black)
                 boton.Background = New SolidColorBrush(Colors.Transparent)
+
+                panel.Content = boton
 
                 Dim tbToolTip As TextBlock = New TextBlock With {
                     .Text = juego.Titulo,
@@ -355,17 +373,16 @@ Module Discord
                 AddHandler boton.PointerEntered, AddressOf UsuarioEntraBoton
                 AddHandler boton.PointerExited, AddressOf UsuarioSaleBoton
 
-                gv.Items.Add(boton)
+                gv.Items.Add(panel)
             Next
 
             If boolBuscarCarpeta = True Then
                 Toast(listaJuegos.Count.ToString + " " + recursos.GetString("GamesDetected"), Nothing)
             End If
         Else
-            panelNoJuegos.Visibility = Visibility.Visible
-            gridSeleccionar.Visibility = Visibility.Collapsed
-
-            gv.Visibility = Visibility.Collapsed
+            gridTiles.Visibility = Visibility.Collapsed
+            gridAvisoNoJuegos.Visibility = Visibility.Visible
+            gridSeleccionarJuego.Visibility = Visibility.Collapsed
         End If
 
         cbTiles.IsEnabled = True
@@ -375,7 +392,7 @@ Module Discord
 
     End Sub
 
-    Private Sub BotonTile_Click(sender As Object, e As RoutedEventArgs)
+    Private Async Sub BotonTile_Click(sender As Object, e As RoutedEventArgs)
 
         Dim frame As Frame = Window.Current.Content
         Dim pagina As Page = frame.Content
@@ -391,6 +408,18 @@ Module Discord
 
         Dim tbJuegoSeleccionado As TextBlock = pagina.FindName("tbJuegoSeleccionado")
         tbJuegoSeleccionado.Text = juego.Titulo
+
+        Dim gridSeleccionarJuego As Grid = pagina.FindName("gridSeleccionarJuego")
+        gridSeleccionarJuego.Visibility = Visibility.Collapsed
+
+        Dim gvTiles As GridView = pagina.FindName("gvTiles")
+
+        If gvTiles.ActualWidth > anchoColumna Then
+            ApplicationData.Current.LocalSettings.Values("ancho_grid_tiles") = gvTiles.ActualWidth
+        End If
+
+        gvTiles.Width = anchoColumna
+        gvTiles.Padding = New Thickness(0, 0, 15, 0)
 
         Dim gridAñadir As Grid = pagina.FindName("gridAñadirTile")
         gridAñadir.Visibility = Visibility.Visible
@@ -408,75 +437,128 @@ Module Discord
 
         '---------------------------------------------
 
-        Dim titulo1 As TextBlock = pagina.FindName("tituloTileAnchaEnseñar")
-        Dim titulo2 As TextBlock = pagina.FindName("tituloTileAnchaPersonalizar")
+        Dim imagenPequeña As ImageEx = pagina.FindName("imagenTilePequeña")
+        imagenPequeña.Source = Nothing
 
-        Dim titulo3 As TextBlock = pagina.FindName("tituloTileGrandeEnseñar")
-        Dim titulo4 As TextBlock = pagina.FindName("tituloTileGrandePersonalizar")
+        Try
+            juego.ImagenPequeña = Await Cache.DescargarImagen(Await SacarIcono(juego.ID), juego.ID, "icono")
+        Catch ex As Exception
 
-        titulo1.Text = juego.Titulo
-        titulo2.Text = juego.Titulo
-
-        titulo3.Text = juego.Titulo
-        titulo4.Text = juego.Titulo
+        End Try
 
         If Not juego.ImagenPequeña = Nothing Then
-            Dim imagenPequeña1 As ImageEx = pagina.FindName("imagenTilePequeñaEnseñar")
-            Dim imagenPequeña2 As ImageEx = pagina.FindName("imagenTilePequeñaGenerar")
-            Dim imagenPequeña3 As ImageEx = pagina.FindName("imagenTilePequeñaPersonalizar")
-
-            imagenPequeña1.Source = juego.ImagenPequeña
-            imagenPequeña2.Source = juego.ImagenPequeña
-            imagenPequeña3.Source = juego.ImagenPequeña
-
-            imagenPequeña1.Tag = juego.ImagenPequeña
-            imagenPequeña2.Tag = juego.ImagenPequeña
-            imagenPequeña3.Tag = juego.ImagenPequeña
+            imagenPequeña.Source = juego.ImagenPequeña
+            imagenPequeña.Tag = juego.ImagenPequeña
         End If
 
-        If Not juego.ImagenMediana = Nothing Then
-            Dim imagenMediana1 As ImageEx = pagina.FindName("imagenTileMedianaEnseñar")
-            Dim imagenMediana2 As ImageEx = pagina.FindName("imagenTileMedianaGenerar")
-            Dim imagenMediana3 As ImageEx = pagina.FindName("imagenTileMedianaPersonalizar")
+        Dim imagenMediana As ImageEx = pagina.FindName("imagenTileMediana")
+        imagenMediana.Source = Nothing
 
-            imagenMediana1.Source = juego.ImagenMediana
-            imagenMediana2.Source = juego.ImagenMediana
-            imagenMediana3.Source = juego.ImagenMediana
-
-            imagenMediana1.Tag = juego.ImagenMediana
-            imagenMediana2.Tag = juego.ImagenMediana
-            imagenMediana3.Tag = juego.ImagenMediana
-        End If
+        Dim imagenAncha As ImageEx = pagina.FindName("imagenTileAncha")
+        imagenAncha.Source = Nothing
 
         If Not juego.ImagenAncha = Nothing Then
-            Dim imagenAncha1 As ImageEx = pagina.FindName("imagenTileAnchaEnseñar")
-            Dim imagenAncha2 As ImageEx = pagina.FindName("imagenTileAnchaGenerar")
-            Dim imagenAncha3 As ImageEx = pagina.FindName("imagenTileAnchaPersonalizar")
+            If Not juego.ImagenMediana = Nothing Then
+                imagenMediana.Source = juego.ImagenMediana
+                imagenMediana.Tag = juego.ImagenMediana
+            Else
+                imagenMediana.Source = juego.ImagenAncha
+                imagenMediana.Tag = juego.ImagenAncha
+            End If
 
-            imagenAncha1.Source = juego.ImagenAncha
-            imagenAncha2.Source = juego.ImagenAncha
-            imagenAncha3.Source = juego.ImagenAncha
-
-            imagenAncha1.Tag = juego.ImagenAncha
-            imagenAncha2.Tag = juego.ImagenAncha
-            imagenAncha3.Tag = juego.ImagenAncha
+            imagenAncha.Source = juego.ImagenAncha
+            imagenAncha.Tag = juego.ImagenAncha
         End If
 
+        Dim imagenGrande As ImageEx = pagina.FindName("imagenTileGrande")
+        imagenGrande.Source = Nothing
+
         If Not juego.ImagenGrande = Nothing Then
-            Dim imagenGrande1 As ImageEx = pagina.FindName("imagenTileGrandeEnseñar")
-            Dim imagenGrande2 As ImageEx = pagina.FindName("imagenTileGrandeGenerar")
-            Dim imagenGrande3 As ImageEx = pagina.FindName("imagenTileGrandePersonalizar")
-
-            imagenGrande1.Source = juego.ImagenGrande
-            imagenGrande2.Source = juego.ImagenGrande
-            imagenGrande3.Source = juego.ImagenGrande
-
-            imagenGrande1.Tag = juego.ImagenGrande
-            imagenGrande2.Tag = juego.ImagenGrande
-            imagenGrande3.Tag = juego.ImagenGrande
+            imagenGrande.Source = juego.ImagenGrande
+            imagenGrande.Tag = juego.ImagenGrande
         End If
 
     End Sub
+
+    Public Async Function SacarIcono(id As String) As Task(Of String)
+
+        Dim modo As Integer = ApplicationData.Current.LocalSettings.Values("modo_tiles")
+
+        Dim helper As New LocalObjectStorageHelper
+
+        If Await helper.FileExistsAsync("juegos" + modo.ToString) = True Then
+            Dim listaJuegos As List(Of Tile) = Await helper.ReadFileAsync(Of List(Of Tile))("juegos" + modo.ToString)
+
+            For Each juego In listaJuegos
+                If id = juego.ID Then
+                    If Not juego.ImagenPequeña = Nothing Then
+                        Return juego.ImagenPequeña
+                    End If
+                End If
+            Next
+        End If
+
+        Dim html As String = Await Decompiladores.HttpClient(New Uri("https://store.steampowered.com/app/" + id + "/"))
+        Dim urlIcono As String = String.Empty
+
+        If Not html = Nothing Then
+            If html.Contains("<div class=" + ChrW(34) + "apphub_AppIcon") Then
+                Dim temp, temp2 As String
+                Dim int, int2 As Integer
+
+                int = html.IndexOf("<div class=" + ChrW(34) + "apphub_AppIcon")
+                temp = html.Remove(0, int)
+
+                int = temp.IndexOf("<img src=")
+                temp = temp.Remove(0, int + 10)
+
+                int2 = temp.IndexOf(ChrW(34))
+                temp2 = temp.Remove(int2, temp.Length - int2)
+
+                temp2 = temp2.Replace("%CDN_HOST_MEDIA_SSL%", "steamcdn-a.akamaihd.net")
+
+                urlIcono = temp2.Trim
+            End If
+        End If
+
+        If urlIcono = Nothing Then
+            html = Await Decompiladores.HttpClient(New Uri("https://steamdb.info/app/" + id + "/"))
+
+            If Not html = Nothing Then
+                If html.Contains("<img class=" + ChrW(34) + "app-icon avatar") Then
+                    Dim temp, temp2 As String
+                    Dim int, int2 As Integer
+
+                    int = html.IndexOf("<img class=" + ChrW(34) + "app-icon avatar")
+                    temp = html.Remove(0, int)
+
+                    int = temp.IndexOf("src=")
+                    temp = temp.Remove(0, int + 5)
+
+                    int2 = temp.IndexOf(ChrW(34))
+                    temp2 = temp.Remove(int2, temp.Length - int2)
+
+                    urlIcono = temp2.Trim
+                End If
+            End If
+        End If
+
+        If Not urlIcono = String.Empty Then
+            If Await helper.FileExistsAsync("juegos" + modo.ToString) = True Then
+                Dim listaJuegos As List(Of Tile) = Await helper.ReadFileAsync(Of List(Of Tile))("juegos" + modo.ToString)
+
+                For Each juego In listaJuegos
+                    If id = juego.ID Then
+                        juego.ImagenPequeña = Await Cache.DescargarImagen(urlIcono, id, "icono")
+                    End If
+                Next
+
+                Await helper.SaveFileAsync(Of List(Of Tile))("juegos" + modo.ToString, listaJuegos)
+            End If
+        End If
+
+        Return urlIcono
+    End Function
 
     Private Sub UsuarioEntraBoton(sender As Object, e As PointerRoutedEventArgs)
 
