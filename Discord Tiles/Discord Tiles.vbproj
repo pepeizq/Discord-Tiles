@@ -139,14 +139,15 @@
     <None Include="Discord Tiles_TemporaryKey.pfx" />
     <PRIResource Include="Strings\he\Resources.resw" />
     <PRIResource Include="Strings\pl-PL\Resources.resw" />
-    <PRIResource Include="Strings\es-ES\Resources.resw" />
-    <PRIResource Include="Strings\en-US\Resources.resw" />
+    <PRIResource Include="Strings\es-ES\Resources.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
+    <PRIResource Include="Strings\en-US\Resources.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\discordtiles_logoapp1.png" />
-    <Content Include="Assets\discord_logo_mini1.png" />
-    <Content Include="Assets\discord_logo_mini3.png" />
-    <Content Include="Assets\discord_logo_mini2.png" />
     <Content Include="Assets\Iconos\1.png" />
     <Content Include="Assets\Iconos\2.png" />
     <Content Include="Assets\Iconos\3.png" />
@@ -202,6 +203,7 @@
     <Content Include="Assets\Logos\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Logos\Wide310x150Logo.scale-400.png" />
     <Content Include="My Project\Default.rd.xml" />
+    <Content Include="Strings\Estados.txt" />
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
