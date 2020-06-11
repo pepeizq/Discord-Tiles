@@ -179,10 +179,12 @@ Module Discord
                     k += 1
                 Next
 
-                If listaJuegos.Count > 0 Then
-                    StorageApplicationPermissions.FutureAccessList.AddOrReplace("DiscordCarpeta", carpeta)
-                    botonCarpetaTexto.Text = carpeta.Path
-                    botonAñadirCarpetaTexto.Text = recursos.GetString("Change")
+                If Not listaJuegos Is Nothing Then
+                    If listaJuegos.Count > 0 Then
+                        StorageApplicationPermissions.FutureAccessList.AddOrReplace("DiscordCarpeta", carpeta)
+                        botonCarpetaTexto.Text = carpeta.Path
+                        botonAñadirCarpetaTexto.Text = recursos.GetString("Change")
+                    End If
                 End If
             End If
         ElseIf modo = 1 Then
@@ -315,10 +317,12 @@ Module Discord
                 End If
             End If
 
-            If listaJuegos.Count > 0 Then
-                StorageApplicationPermissions.FutureAccessList.AddOrReplace("DiscordCarpeta2", carpeta)
-                botonCarpetaTexto2.Text = carpeta.Path
-                botonAñadirCarpetaTexto2.Text = recursos.GetString("Change")
+            If Not listaJuegos Is Nothing Then
+                If listaJuegos.Count > 0 Then
+                    StorageApplicationPermissions.FutureAccessList.AddOrReplace("DiscordCarpeta2", carpeta)
+                    botonCarpetaTexto2.Text = carpeta.Path
+                    botonAñadirCarpetaTexto2.Text = recursos.GetString("Change")
+                End If
             End If
         End If
 
@@ -340,41 +344,7 @@ Module Discord
                 gv.Items.Clear()
 
                 For Each juego In listaJuegos
-                    Dim panel As New DropShadowPanel With {
-                        .Margin = New Thickness(5, 5, 5, 5),
-                        .ShadowOpacity = 0.9,
-                        .BlurRadius = 5
-                    }
-
-                    Dim boton As New Button
-
-                    Dim imagen As New ImageEx With {
-                        .Source = juego.ImagenAncha,
-                        .IsCacheEnabled = True,
-                        .Stretch = Stretch.UniformToFill,
-                        .Padding = New Thickness(0, 0, 0, 0)
-                    }
-
-                    boton.Tag = juego
-                    boton.Content = imagen
-                    boton.Padding = New Thickness(0, 0, 0, 0)
-                    boton.Background = New SolidColorBrush(Colors.Transparent)
-
-                    panel.Content = boton
-
-                    Dim tbToolTip As TextBlock = New TextBlock With {
-                        .Text = juego.Titulo,
-                        .FontSize = 16
-                    }
-
-                    ToolTipService.SetToolTip(boton, tbToolTip)
-                    ToolTipService.SetPlacement(boton, PlacementMode.Mouse)
-
-                    AddHandler boton.Click, AddressOf BotonTile_Click
-                    AddHandler boton.PointerEntered, AddressOf UsuarioEntraBoton
-                    AddHandler boton.PointerExited, AddressOf UsuarioSaleBoton
-
-                    gv.Items.Add(panel)
+                    BotonEstilo(juego, gv)
                 Next
 
                 If boolBuscarCarpeta = True Then
@@ -395,6 +365,48 @@ Module Discord
         sp1.IsHitTestVisible = True
         sp2.IsHitTestVisible = True
         botonCache.IsEnabled = True
+
+    End Sub
+
+    Public Sub BotonEstilo(juego As Tile, gv As GridView)
+
+        Dim panel As New DropShadowPanel With {
+            .Margin = New Thickness(5, 5, 5, 5),
+            .ShadowOpacity = 0.9,
+            .BlurRadius = 5,
+            .MaxWidth = anchoColumna + 10
+        }
+
+        Dim boton As New Button
+
+        Dim imagen As New ImageEx With {
+            .Source = juego.ImagenAncha,
+            .IsCacheEnabled = True,
+            .Stretch = Stretch.UniformToFill,
+            .Padding = New Thickness(0, 0, 0, 0)
+        }
+
+        boton.Tag = juego
+        boton.Content = imagen
+        boton.Padding = New Thickness(0, 0, 0, 0)
+        boton.Background = New SolidColorBrush(Colors.Transparent)
+
+        panel.Content = boton
+
+        Dim tbToolTip As TextBlock = New TextBlock With {
+            .Text = juego.Titulo,
+            .FontSize = 16,
+            .TextWrapping = TextWrapping.Wrap
+        }
+
+        ToolTipService.SetToolTip(boton, tbToolTip)
+        ToolTipService.SetPlacement(boton, PlacementMode.Mouse)
+
+        AddHandler boton.Click, AddressOf BotonTile_Click
+        AddHandler boton.PointerEntered, AddressOf UsuarioEntraBoton
+        AddHandler boton.PointerExited, AddressOf UsuarioSaleBoton
+
+        gv.Items.Add(panel)
 
     End Sub
 
