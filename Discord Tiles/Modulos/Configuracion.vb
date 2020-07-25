@@ -46,7 +46,10 @@ Module Configuracion
             sp2.Visibility = Visibility.Collapsed
         End If
 
-        Discord.Generar(False)
+        If arranque = False Then
+            Discord.Generar(False)
+        End If
+
 
     End Sub
 

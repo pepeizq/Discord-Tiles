@@ -190,10 +190,10 @@
     <value>Enseñar los Juegos Instalados</value>
   </data>
   <data name="ConfigTileMode2.Content" xml:space="preserve">
-    <value>Enseñar los Juegos Importados</value>
+    <value>Enseñar los Juegos Importados de Steam</value>
   </data>
   <data name="ConfigFolderMessage2.Text" xml:space="preserve">
-    <value>Añade la carpeta C:\Users\[tu usuario]\AppData\Roaming\discord\Local Storage\leveldb</value>
+    <value>Añade el fichero .log en C:\Users\[tu usuario]\AppData\Roaming\discord\Local Storage\leveldb</value>
   </data>
   <data name="ConfigCleanCache.Text" xml:space="preserve">
     <value>Limpiar Cache</value>
@@ -202,7 +202,7 @@
     <value>Como desbloquear</value>
   </data>
   <data name="ConfigFolderWarning.Text" xml:space="preserve">
-    <value>Dependiendo de la configuración de Windows la carpeta puede estar oculta</value>
+    <value>Dependiendo de la configuración de Windows el fichero puede estar oculto.</value>
   </data>
   <data name="Options.Text" xml:space="preserve">
     <value>Opciones</value>
@@ -284,5 +284,20 @@
   </data>
   <data name="GamePersonalizationInfo.Text" xml:space="preserve">
     <value>Clickea en la imagen para personalizarla antes de añadir la Tile</value>
+  </data>
+  <data name="CacheMode.Text" xml:space="preserve">
+    <value>Modo Cache</value>
+  </data>
+  <data name="CacheMode2.Text" xml:space="preserve">
+    <value>Si activas este modo, la app descarga en tu disco duro cada imagen necesaria del juego para añadir Tiles.</value>
+  </data>
+  <data name="ConfigFindFile.Text" xml:space="preserve">
+    <value>Buscar Fichero</value>
+  </data>
+  <data name="SteamTiles.Text" xml:space="preserve">
+    <value>Si deseas añadir Tiles de tus juegos de Steam sin tener que usar Discord, he creado una app para ese cometido.</value>
+  </data>
+  <data name="SteamTilesOpen.Content" xml:space="preserve">
+    <value>Abrir App</value>
   </data>
 </root>

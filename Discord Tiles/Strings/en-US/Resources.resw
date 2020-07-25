@@ -190,10 +190,10 @@
     <value>Show Installed Games</value>
   </data>
   <data name="ConfigTileMode2.Content" xml:space="preserve">
-    <value>Show Imported Games</value>
+    <value>Show Imported Steam Games</value>
   </data>
   <data name="ConfigFolderMessage2.Text" xml:space="preserve">
-    <value>Add the folder C:\Users\[your user]\AppData\Roaming\discord\Local Storage\leveldb</value>
+    <value>Add the file .log in C:\Users\[your user]\AppData\Roaming\discord\Local Storage\leveldb</value>
   </data>
   <data name="ConfigCleanCache.Text" xml:space="preserve">
     <value>Clear Cache</value>
@@ -202,7 +202,7 @@
     <value>How to unlock</value>
   </data>
   <data name="ConfigFolderWarning.Text" xml:space="preserve">
-    <value>Depending on the Windows configuration the folder may be hidden</value>
+    <value>Depending on the Windows configuration the file may be hidden.</value>
   </data>
   <data name="Options.Text" xml:space="preserve">
     <value>Options</value>
@@ -284,5 +284,20 @@
   </data>
   <data name="GamePersonalizationInfo.Text" xml:space="preserve">
     <value>Click on the image to customize it before adding the Tile</value>
+  </data>
+  <data name="CacheMode.Text" xml:space="preserve">
+    <value>Cache Mode</value>
+  </data>
+  <data name="CacheMode2.Text" xml:space="preserve">
+    <value>If you activate this mode, the app will download each necessary image of the game to your hard disk to add Tiles.</value>
+  </data>
+  <data name="ConfigFindFile.Text" xml:space="preserve">
+    <value>Find File</value>
+  </data>
+  <data name="SteamTiles.Text" xml:space="preserve">
+    <value>If you want to add Tiles to your Steam games without having to use Discord, I have created an app for that purpose.</value>
+  </data>
+  <data name="SteamTilesOpen.Content" xml:space="preserve">
+    <value>Open App</value>
   </data>
 </root>

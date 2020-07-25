@@ -5,13 +5,15 @@ Imports Newtonsoft.Json
 Imports Windows.Storage
 Imports Windows.Storage.AccessCache
 Imports Windows.Storage.Pickers
+Imports Windows.Storage.Streams
 Imports Windows.UI
 Imports Windows.UI.Core
 Imports Windows.UI.Xaml.Media.Animation
 
 Module Discord
 
-    Public anchoColumna As Integer = 306
+    Public anchoColumna As Integer = 200
+    Dim dominioImagenes As String = "https://cdn.cloudflare.steamstatic.com"
 
     Public Async Sub Generar(boolBuscarCarpeta As Boolean)
 
@@ -42,8 +44,7 @@ Module Discord
         Dim sp2 As StackPanel = pagina.FindName("spModoTile2")
         sp2.IsHitTestVisible = False
 
-        Dim botonCache As Button = pagina.FindName("botonConfigLimpiarCache")
-        botonCache.IsEnabled = False
+        Cache.Estado(False)
 
         Dim gridSeleccionarJuego As Grid = pagina.FindName("gridSeleccionarJuego")
         gridSeleccionarJuego.Visibility = Visibility.Collapsed
@@ -133,22 +134,30 @@ Module Discord
                                                 Dim imagenAncha As String = String.Empty
 
                                                 Try
-                                                    imagenAncha = Await Cache.DescargarImagen("https://steamcdn-a.akamaihd.net/steam/apps/" + idSteam + "/header.jpg", idSteam, "ancha")
+                                                    imagenAncha = Await Cache.DescargarImagen(dominioImagenes + "/steam/apps/" + idSteam + "/header.jpg", idSteam, "ancha")
                                                 Catch ex As Exception
 
                                                 End Try
 
                                                 Dim imagenGrande As String = String.Empty
 
-                                                Try
-                                                    imagenGrande = Await Cache.DescargarImagen("https://steamcdn-a.akamaihd.net/steam/apps/" + idSteam + "/library_600x900.jpg", idSteam, "grande")
-                                                Catch ex As Exception
+                                                Dim listadoImagenesVertical As List(Of DiscordBBDDImagenVertical) = DiscordBBDD.Listado
 
-                                                End Try
+                                                For Each vertical In listadoImagenesVertical
+                                                    If vertical.ID = datos.IDJuego Then
+                                                        imagenGrande = Await Cache.DescargarImagen(vertical.Enlace, idSteam, "grande")
+                                                    End If
+                                                Next
 
                                                 If imagenGrande = String.Empty Then
                                                     Try
-                                                        imagenGrande = Await Cache.DescargarImagen("https://steamcdn-a.akamaihd.net/steam/apps/" + idSteam + "/capsule_616x353.jpg", idSteam, "grande")
+                                                        imagenGrande = Await Cache.DescargarImagen(dominioImagenes + "/steam/apps/" + idSteam + "/library_600x900.jpg", idSteam, "grande")
+                                                    Catch ex As Exception
+
+                                                    End Try
+
+                                                    Try
+                                                        imagenGrande = Await Cache.DescargarImagen(dominioImagenes + "/steam/apps/" + idSteam + "/capsule_616x353.jpg", idSteam, "grande")
                                                     Catch ex As Exception
 
                                                     End Try
@@ -189,139 +198,131 @@ Module Discord
             End If
         ElseIf modo = 1 Then
             Dim botonAñadirCarpetaTexto2 As TextBlock = pagina.FindName("botonAñadirCarpetaTexto2")
-            Dim botonCarpetaTexto2 As TextBlock = pagina.FindName("tbConfigCarpeta2")
 
-            Dim carpeta As StorageFolder = Nothing
+            Dim fichero As StorageFile = Nothing
 
             Try
                 If boolBuscarCarpeta = True Then
-                    Dim carpetapicker As New FolderPicker()
+                    Dim ficheroPicker As New FileOpenPicker()
 
-                    carpetapicker.FileTypeFilter.Add("*")
-                    carpetapicker.ViewMode = PickerViewMode.List
+                    ficheroPicker.FileTypeFilter.Add(".log")
+                    ficheroPicker.ViewMode = PickerViewMode.List
 
-                    carpeta = Await carpetapicker.PickSingleFolderAsync()
+                    fichero = Await ficheroPicker.PickSingleFileAsync
+                    StorageApplicationPermissions.FutureAccessList.AddOrReplace("DiscordFichero", fichero)
                 Else
-                    carpeta = Await StorageApplicationPermissions.FutureAccessList.GetFolderAsync("DiscordCarpeta2")
+                    fichero = Await StorageApplicationPermissions.FutureAccessList.GetFileAsync("DiscordFichero")
                 End If
             Catch ex As Exception
 
             End Try
 
-            If Not carpeta Is Nothing Then
-                If Not carpeta Is Nothing Then
-                    Dim ficheros As IReadOnlyList(Of StorageFile) = Await carpeta.GetFilesAsync()
+            If Not fichero Is Nothing Then
+                If fichero.FileType.Contains(".log") Then
+                    Dim stream As IRandomAccessStreamWithContentType = Await fichero.OpenReadAsync()
+                    Dim stream2 As Stream = stream.AsStreamForRead
 
-                    For Each fichero As StorageFile In ficheros
-                        If fichero.FileType.Contains(".log") Then
-                            Dim stream As Streams.IRandomAccessStreamWithContentType = Await fichero.OpenReadAsync()
-                            Dim stream2 As Stream = stream.AsStreamForRead
+                    Dim lineas As String = String.Empty
+                    Using stream3 As New StreamReader(stream2)
+                        lineas = lineas + stream3.ReadLineAsync.Result
+                    End Using
 
-                            Dim lineas As String = String.Empty
-                            Using stream3 As New StreamReader(stream2)
-                                lineas = lineas + stream3.ReadLine
-                            End Using
+                    Dim i As Integer = 0
+                    While i < 1000
+                        If Not lineas.Contains(ChrW(34) + "distributor" + ChrW(34) + ":" + ChrW(34) + "steam" + ChrW(34)) Then
+                            Exit While
+                        Else
+                            Dim temp, temp2, temp3 As String
+                            Dim int, int2, int3 As Integer
 
-                            Dim i As Integer = 0
-                            While i < 1000
-                                If Not lineas.Contains(ChrW(34) + "distributor" + ChrW(34) + ":" + ChrW(34) + "steam" + ChrW(34)) Then
-                                    Exit While
-                                Else
-                                    Dim temp, temp2, temp3 As String
-                                    Dim int, int2, int3 As Integer
+                            int = lineas.IndexOf(ChrW(34) + "distributor" + ChrW(34) + ":" + ChrW(34) + "steam" + ChrW(34))
+                            temp = lineas.Remove(int, lineas.Length - int)
 
-                                    int = lineas.IndexOf(ChrW(34) + "distributor" + ChrW(34) + ":" + ChrW(34) + "steam" + ChrW(34))
-                                    temp = lineas.Remove(int, lineas.Length - int)
+                            lineas = lineas.Remove(0, int + 5)
 
-                                    lineas = lineas.Remove(0, int + 5)
+                            int2 = temp.LastIndexOf(ChrW(34) + "sku" + ChrW(34))
+                            temp2 = temp.Remove(0, int2 + 7)
 
-                                    int2 = temp.LastIndexOf(ChrW(34) + "sku" + ChrW(34))
-                                    temp2 = temp.Remove(0, int2 + 7)
+                            int3 = temp2.IndexOf(ChrW(34))
+                            temp3 = temp2.Remove(int3, temp2.Length - int3)
 
-                                    int3 = temp2.IndexOf(ChrW(34))
-                                    temp3 = temp2.Remove(int3, temp2.Length - int3)
+                            Dim id As String = temp3.Trim
 
-                                    Dim id As String = temp3.Trim
+                            Dim añadir As Boolean = True
+                            Dim j As Integer = 0
+                            While j < listaJuegos.Count
+                                If listaJuegos(j).ID = id Then
+                                    añadir = False
+                                End If
+                                j += 1
+                            End While
 
-                                    Dim añadir As Boolean = True
-                                    Dim j As Integer = 0
-                                    While j < listaJuegos.Count
-                                        If listaJuegos(j).ID = id Then
-                                            añadir = False
-                                        End If
-                                        j += 1
-                                    End While
+                            If añadir = True Then
+                                Dim htmlAPI As String = Await HttpClient(New Uri("https://store.steampowered.com/api/appdetails/?appids=" + id))
 
-                                    If añadir = True Then
-                                        Dim htmlAPI As String = Await HttpClient(New Uri("https://store.steampowered.com/api/appdetails/?appids=" + id))
+                                If Not htmlAPI = Nothing Then
+                                    Dim temp4 As String
+                                    Dim int4 As Integer
 
-                                        If Not htmlAPI = Nothing Then
-                                            Dim temp4 As String
-                                            Dim int4 As Integer
+                                    int4 = htmlAPI.IndexOf(":")
+                                    temp4 = htmlAPI.Remove(0, int4 + 1)
+                                    temp4 = temp4.Remove(temp4.Length - 1, 1)
 
-                                            int4 = htmlAPI.IndexOf(":")
-                                            temp4 = htmlAPI.Remove(0, int4 + 1)
-                                            temp4 = temp4.Remove(temp4.Length - 1, 1)
+                                    Dim api As SteamAPI = JsonConvert.DeserializeObject(Of SteamAPI)(temp4)
 
-                                            Dim api As SteamAPI = JsonConvert.DeserializeObject(Of SteamAPI)(temp4)
+                                    If Not api Is Nothing Then
+                                        If Not api.Datos Is Nothing Then
+                                            Dim imagenLogo As String = String.Empty
 
-                                            If Not api Is Nothing Then
-                                                If Not api.Datos Is Nothing Then
-                                                    Dim imagenLogo As String = String.Empty
+                                            Try
+                                                imagenLogo = Await Cache.DescargarImagen(dominioImagenes + "/steam/apps/" + id + "/logo.png", id, "logo")
+                                            Catch ex As Exception
 
-                                                    Try
-                                                        imagenLogo = Await Cache.DescargarImagen("https://steamcdn-a.akamaihd.net/steam/apps/" + id + "/logo.png", id, "logo")
-                                                    Catch ex As Exception
+                                            End Try
 
-                                                    End Try
+                                            Dim imagenAncha As String = String.Empty
 
-                                                    Dim imagenAncha As String = String.Empty
+                                            Try
+                                                imagenAncha = Await Cache.DescargarImagen(dominioImagenes + "/steam/apps/" + id + "/header.jpg", id, "ancha")
+                                            Catch ex As Exception
 
-                                                    Try
-                                                        imagenAncha = Await Cache.DescargarImagen("https://steamcdn-a.akamaihd.net/steam/apps/" + id + "/header.jpg", id, "ancha")
-                                                    Catch ex As Exception
+                                            End Try
 
-                                                    End Try
+                                            Dim imagenGrande As String = String.Empty
 
-                                                    Dim imagenGrande As String = String.Empty
+                                            Try
+                                                imagenGrande = Await Cache.DescargarImagen(dominioImagenes + "/steam/apps/" + id + "/library_600x900.jpg", id, "grande")
+                                            Catch ex As Exception
 
-                                                    Try
-                                                        imagenGrande = Await Cache.DescargarImagen("https://steamcdn-a.akamaihd.net/steam/apps/" + id + "/library_600x900.jpg", id, "grande")
-                                                    Catch ex As Exception
+                                            End Try
 
-                                                    End Try
+                                            If imagenGrande = String.Empty Then
+                                                Try
+                                                    imagenGrande = Await Cache.DescargarImagen(dominioImagenes + "/steam/apps/" + id + "/capsule_616x353.jpg", id, "grande")
+                                                Catch ex As Exception
 
-                                                    If imagenGrande = String.Empty Then
-                                                        Try
-                                                            imagenGrande = Await Cache.DescargarImagen("https://steamcdn-a.akamaihd.net/steam/apps/" + id + "/capsule_616x353.jpg", id, "grande")
-                                                        Catch ex As Exception
-
-                                                        End Try
-                                                    End If
-
-                                                    Dim juego As New Tile(api.Datos.Titulo, id, "steam://rungameid/" + id, Nothing, imagenLogo, imagenAncha, imagenGrande)
-
-                                                    listaJuegos.Add(juego)
-                                                End If
+                                                End Try
                                             End If
+
+                                            Dim juego As New Tile(api.Datos.Titulo, id, "steam://rungameid/" + id, Nothing, imagenLogo, imagenAncha, imagenGrande)
+
+                                            listaJuegos.Add(juego)
                                         End If
                                     End If
                                 End If
-
-                                pbProgreso.Value = i.ToString
-                                tbProgreso.Text = i.ToString
-                                i += 1
-                            End While
+                            End If
                         End If
-                    Next
+
+                        pbProgreso.Value = i.ToString
+                        tbProgreso.Text = i.ToString
+                        i += 1
+                    End While
                 End If
             End If
 
             If Not listaJuegos Is Nothing Then
                 If listaJuegos.Count > 0 Then
-                    StorageApplicationPermissions.FutureAccessList.AddOrReplace("DiscordCarpeta2", carpeta)
-                    botonCarpetaTexto2.Text = carpeta.Path
-                    botonAñadirCarpetaTexto2.Text = recursos.GetString("Change")
+                    StorageApplicationPermissions.FutureAccessList.AddOrReplace("DiscordFichero", fichero)
                 End If
             End If
         End If
@@ -332,12 +333,14 @@ Module Discord
 
         Dim gridTiles As Grid = pagina.FindName("gridTiles")
         Dim gridAvisoNoJuegos As Grid = pagina.FindName("gridAvisoNoJuegos")
+        Dim spBuscador As StackPanel = pagina.FindName("spBuscador")
 
         If Not listaJuegos Is Nothing Then
             If listaJuegos.Count > 0 Then
                 gridTiles.Visibility = Visibility.Visible
                 gridAvisoNoJuegos.Visibility = Visibility.Collapsed
                 gridSeleccionarJuego.Visibility = Visibility.Visible
+                spBuscador.Visibility = Visibility.Visible
 
                 listaJuegos.Sort(Function(x, y) x.Titulo.CompareTo(y.Titulo))
 
@@ -347,43 +350,49 @@ Module Discord
                     BotonEstilo(juego, gv)
                 Next
 
-                If boolBuscarCarpeta = True Then
-                    Toast(listaJuegos.Count.ToString + " " + recursos.GetString("GamesDetected"), Nothing)
-                End If
+                'If boolBuscarCarpeta = True Then
+                '    Toast(listaJuegos.Count.ToString + " " + recursos.GetString("GamesDetected"), Nothing)
+                'End If
             Else
                 gridTiles.Visibility = Visibility.Collapsed
                 gridAvisoNoJuegos.Visibility = Visibility.Visible
                 gridSeleccionarJuego.Visibility = Visibility.Collapsed
+                spBuscador.Visibility = Visibility.Collapsed
             End If
         Else
             gridTiles.Visibility = Visibility.Collapsed
             gridAvisoNoJuegos.Visibility = Visibility.Visible
             gridSeleccionarJuego.Visibility = Visibility.Collapsed
+            spBuscador.Visibility = Visibility.Collapsed
         End If
 
         cbTiles.IsEnabled = True
         sp1.IsHitTestVisible = True
         sp2.IsHitTestVisible = True
-        botonCache.IsEnabled = True
+        Cache.Estado(True)
 
     End Sub
 
     Public Sub BotonEstilo(juego As Tile, gv As GridView)
 
         Dim panel As New DropShadowPanel With {
-            .Margin = New Thickness(5, 5, 5, 5),
+            .Margin = New Thickness(10, 10, 10, 10),
             .ShadowOpacity = 0.9,
-            .BlurRadius = 5,
-            .MaxWidth = anchoColumna + 10
+            .BlurRadius = 10,
+            .MaxWidth = anchoColumna + 20,
+            .HorizontalAlignment = HorizontalAlignment.Center,
+            .VerticalAlignment = VerticalAlignment.Center
         }
 
         Dim boton As New Button
 
         Dim imagen As New ImageEx With {
-            .Source = juego.ImagenAncha,
+            .Source = juego.ImagenGrande,
             .IsCacheEnabled = True,
-            .Stretch = Stretch.UniformToFill,
-            .Padding = New Thickness(0, 0, 0, 0)
+            .Stretch = Stretch.Uniform,
+            .Padding = New Thickness(0, 0, 0, 0),
+            .HorizontalAlignment = HorizontalAlignment.Center,
+            .VerticalAlignment = VerticalAlignment.Center
         }
 
         boton.Tag = juego
@@ -414,6 +423,9 @@ Module Discord
 
         Dim frame As Frame = Window.Current.Content
         Dim pagina As Page = frame.Content
+
+        Dim spBuscador As StackPanel = pagina.FindName("spBuscador")
+        spBuscador.Visibility = Visibility.Collapsed
 
         Dim botonJuego As Button = e.OriginalSource
         Dim juego As Tile = botonJuego.Tag
@@ -458,6 +470,15 @@ Module Discord
         Dim imagenPequeña As ImageEx = pagina.FindName("imagenTilePequeña")
         imagenPequeña.Source = Nothing
 
+        Dim imagenMediana As ImageEx = pagina.FindName("imagenTileMediana")
+        imagenMediana.Source = Nothing
+
+        Dim imagenAncha As ImageEx = pagina.FindName("imagenTileAncha")
+        imagenAncha.Source = Nothing
+
+        Dim imagenGrande As ImageEx = pagina.FindName("imagenTileGrande")
+        imagenGrande.Source = Nothing
+
         Try
             juego.ImagenPequeña = Await Cache.DescargarImagen(Await SacarIcono(juego.ID), juego.ID, "icono")
         Catch ex As Exception
@@ -468,12 +489,6 @@ Module Discord
             imagenPequeña.Source = juego.ImagenPequeña
             imagenPequeña.Tag = juego.ImagenPequeña
         End If
-
-        Dim imagenMediana As ImageEx = pagina.FindName("imagenTileMediana")
-        imagenMediana.Source = Nothing
-
-        Dim imagenAncha As ImageEx = pagina.FindName("imagenTileAncha")
-        imagenAncha.Source = Nothing
 
         If Not juego.ImagenAncha = Nothing Then
             If Not juego.ImagenMediana = Nothing Then
@@ -487,9 +502,6 @@ Module Discord
             imagenAncha.Source = juego.ImagenAncha
             imagenAncha.Tag = juego.ImagenAncha
         End If
-
-        Dim imagenGrande As ImageEx = pagina.FindName("imagenTileGrande")
-        imagenGrande.Source = Nothing
 
         If Not juego.ImagenGrande = Nothing Then
             imagenGrande.Source = juego.ImagenGrande
@@ -580,10 +592,14 @@ Module Discord
 
     Private Sub UsuarioEntraBoton(sender As Object, e As PointerRoutedEventArgs)
 
-        Dim boton As Button = sender
-        Dim imagen As ImageEx = boton.Content
+        Dim frame As Frame = Window.Current.Content
+        Dim pagina As Page = frame.Content
 
-        imagen.Saturation(0).Start()
+        Dim gvTiles As AdaptiveGridView = pagina.FindName("gvTiles")
+
+        Dim boton As Button = sender
+
+        boton.Saturation(0).Scale(1.05, 1.05, gvTiles.DesiredWidth / 2, gvTiles.ItemHeight / 2).Start()
 
         Window.Current.CoreWindow.PointerCursor = New CoreCursor(CoreCursorType.Hand, 1)
 
@@ -591,10 +607,15 @@ Module Discord
 
     Private Sub UsuarioSaleBoton(sender As Object, e As PointerRoutedEventArgs)
 
-        Dim boton As Button = sender
-        Dim imagen As ImageEx = boton.Content
 
-        imagen.Saturation(1).Start()
+        Dim frame As Frame = Window.Current.Content
+        Dim pagina As Page = frame.Content
+
+        Dim gvTiles As AdaptiveGridView = pagina.FindName("gvTiles")
+
+        Dim boton As Button = sender
+
+        boton.Saturation(1).Scale(1, 1, gvTiles.DesiredWidth / 2, gvTiles.ItemHeight / 2).Start()
 
         Window.Current.CoreWindow.PointerCursor = New CoreCursor(CoreCursorType.Arrow, 1)
 
