@@ -46,9 +46,6 @@ Module Discord
         End If
 
         If modo = 0 Then
-            Dim botonAñadirCarpetaTexto As TextBlock = pagina.FindName("botonAñadirCarpetaTexto")
-            Dim botonCarpetaTexto As TextBlock = pagina.FindName("tbConfigCarpeta")
-
             Dim carpeta As StorageFolder = Nothing
 
             Try
