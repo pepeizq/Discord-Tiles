@@ -1,5 +1,4 @@
 ﻿Imports Microsoft.Toolkit.Uwp.Helpers
-Imports Microsoft.Toolkit.Uwp.UI.Animations
 Imports Microsoft.Toolkit.Uwp.UI.Controls
 Imports Newtonsoft.Json
 Imports Windows.Storage
@@ -7,15 +6,16 @@ Imports Windows.Storage.AccessCache
 Imports Windows.Storage.Pickers
 Imports Windows.Storage.Streams
 Imports Windows.UI
-Imports Windows.UI.Core
-Imports Windows.UI.Xaml.Media.Animation
 
 Module Discord
 
-    Public anchoColumna As Integer = 200
+    Public anchoColumna As Integer = 180
     Dim dominioImagenes As String = "https://cdn.cloudflare.steamstatic.com"
 
-    Public Async Sub Generar(boolBuscarCarpeta As Boolean)
+    Dim clave1 As String = "DiscordCarpeta2"
+    Dim clave2 As String = "DiscordFichero"
+
+    Public Async Sub Generar(buscar As Boolean)
 
         Dim modo As Integer = ApplicationData.Current.LocalSettings.Values("modo_tiles")
 
@@ -26,23 +26,11 @@ Module Discord
         Dim frame As Frame = Window.Current.Content
         Dim pagina As Page = frame.Content
 
-        Dim gridProgreso As Grid = pagina.FindName("gridProgreso")
-        Interfaz.Pestañas.Visibilidad_Pestañas(gridProgreso, Nothing)
-
         Dim pbProgreso As ProgressBar = pagina.FindName("pbProgreso")
         pbProgreso.Value = 0
 
         Dim tbProgreso As TextBlock = pagina.FindName("tbProgreso")
         tbProgreso.Text = String.Empty
-
-        Dim cbTiles As ComboBox = pagina.FindName("cbConfigModosTiles")
-        cbTiles.IsEnabled = False
-
-        Dim sp1 As StackPanel = pagina.FindName("spModoTile1")
-        sp1.IsHitTestVisible = False
-
-        Dim sp2 As StackPanel = pagina.FindName("spModoTile2")
-        sp2.IsHitTestVisible = False
 
         Configuracion.Estado(False)
         Cache.Estado(False)
@@ -64,21 +52,34 @@ Module Discord
             Dim carpeta As StorageFolder = Nothing
 
             Try
-                If boolBuscarCarpeta = True Then
+                If buscar = True Then
                     Dim carpetapicker As New FolderPicker()
 
                     carpetapicker.FileTypeFilter.Add("*")
                     carpetapicker.ViewMode = PickerViewMode.List
 
                     carpeta = Await carpetapicker.PickSingleFolderAsync()
-                Else
-                    carpeta = Await StorageApplicationPermissions.FutureAccessList.GetFolderAsync("DiscordCarpeta")
+
+                    If Not carpeta Is Nothing Then
+                        StorageApplicationPermissions.FutureAccessList.AddOrReplace(clave1, carpeta)
+                    End If
+                End If
+            Catch ex As Exception
+
+            End Try
+
+            Try
+                If carpeta Is Nothing Then
+                    carpeta = Await StorageApplicationPermissions.FutureAccessList.GetFolderAsync(clave1)
                 End If
             Catch ex As Exception
 
             End Try
 
             If Not carpeta Is Nothing Then
+                Dim gridProgreso As Grid = pagina.FindName("gridProgreso")
+                Interfaz.Pestañas.Visibilidad_Pestañas(gridProgreso, Nothing)
+
                 Dim carpetasJuegos As IReadOnlyList(Of StorageFolder) = Await carpeta.GetFoldersAsync()
 
                 Dim k As Integer = 0
@@ -105,6 +106,18 @@ Module Discord
                                 End While
 
                                 If añadir = True Then
+                                    Dim imagenLogo As String = Await Cache.DescargarImagen(Nothing, datos.IDJuego, "logo")
+                                    Dim imagenAncha As String = Await Cache.DescargarImagen(Nothing, datos.IDJuego, "ancha")
+                                    Dim imagenGrande As String = Await Cache.DescargarImagen(Nothing, datos.IDJuego, "grande")
+
+                                    Dim imagenIcono As String = String.Empty
+
+                                    Try
+                                        imagenIcono = Await Cache.DescargarImagen("https://cdn.discordapp.com/game-assets/" + datos.IDJuego + "/" + datos.IDIcono + ".png?size=1024", datos.IDJuego, "icono")
+                                    Catch ex As Exception
+
+                                    End Try
+
                                     Dim idSteam As String = Nothing
                                     Dim htmlSteam As String = Await Decompiladores.HttpClient(New Uri("https://store.steampowered.com/search/?term=" + datos.Titulo.Replace(" ", "+")))
 
@@ -130,23 +143,13 @@ Module Discord
 
                                                 idSteam = temp6.Trim
 
-                                                Dim imagenAncha As String = String.Empty
+                                                If imagenAncha = String.Empty Then
+                                                    Try
+                                                        imagenAncha = Await Cache.DescargarImagen(dominioImagenes + "/steam/apps/" + idSteam + "/header.jpg", idSteam, "ancha")
+                                                    Catch ex As Exception
 
-                                                Try
-                                                    imagenAncha = Await Cache.DescargarImagen(dominioImagenes + "/steam/apps/" + idSteam + "/header.jpg", idSteam, "ancha")
-                                                Catch ex As Exception
-
-                                                End Try
-
-                                                Dim imagenGrande As String = String.Empty
-
-                                                Dim listadoImagenesVertical As List(Of DiscordBBDDImagenVertical) = DiscordBBDD.Listado
-
-                                                For Each vertical In listadoImagenesVertical
-                                                    If vertical.ID = datos.IDJuego Then
-                                                        imagenGrande = Await Cache.DescargarImagen(vertical.Enlace, idSteam, "grande")
-                                                    End If
-                                                Next
+                                                    End Try
+                                                End If
 
                                                 If imagenGrande = String.Empty Then
                                                     Try
@@ -161,22 +164,14 @@ Module Discord
 
                                                     End Try
                                                 End If
-
-                                                Dim imagenIcono As String = String.Empty
-
-                                                Try
-                                                    imagenIcono = Await Cache.DescargarImagen("https://cdn.discordapp.com/game-assets/" + datos.IDJuego + "/" + datos.IDIcono + ".png?size=1024", datos.IDJuego, "icono")
-                                                Catch ex As Exception
-
-                                                End Try
-
-                                                Dim juego As New Tile(titulo, datos.IDJuego, "discord:///library/" + datos.IDJuego + "/launch",
-                                                                      imagenIcono, imagenIcono, imagenAncha, imagenGrande)
-
-                                                listaJuegos.Add(juego)
                                             End If
                                         End If
                                     End If
+
+                                    Dim juego As New Tile(titulo, datos.IDJuego, "discord:///library/" + datos.IDJuego + "/launch",
+                                                          imagenIcono, imagenLogo, imagenAncha, imagenGrande)
+
+                                    listaJuegos.Add(juego)
                                 End If
                             End If
                         End If
@@ -186,37 +181,30 @@ Module Discord
                     tbProgreso.Text = k.ToString + "/" + carpetasJuegos.Count.ToString
                     k += 1
                 Next
-
-                If Not listaJuegos Is Nothing Then
-                    If listaJuegos.Count > 0 Then
-                        StorageApplicationPermissions.FutureAccessList.AddOrReplace("DiscordCarpeta", carpeta)
-                        botonCarpetaTexto.Text = carpeta.Path
-                        botonAñadirCarpetaTexto.Text = recursos.GetString("Change")
-                    End If
-                End If
             End If
         ElseIf modo = 1 Then
-            Dim botonAñadirCarpetaTexto2 As TextBlock = pagina.FindName("botonAñadirCarpetaTexto2")
-
             Dim fichero As StorageFile = Nothing
 
             Try
-                If boolBuscarCarpeta = True Then
+                If buscar = True Then
                     Dim ficheroPicker As New FileOpenPicker()
 
                     ficheroPicker.FileTypeFilter.Add(".log")
                     ficheroPicker.ViewMode = PickerViewMode.List
 
                     fichero = Await ficheroPicker.PickSingleFileAsync
-                    StorageApplicationPermissions.FutureAccessList.AddOrReplace("DiscordFichero", fichero)
+                    StorageApplicationPermissions.FutureAccessList.AddOrReplace(clave2, fichero)
                 Else
-                    fichero = Await StorageApplicationPermissions.FutureAccessList.GetFileAsync("DiscordFichero")
+                    fichero = Await StorageApplicationPermissions.FutureAccessList.GetFileAsync(clave2)
                 End If
             Catch ex As Exception
 
             End Try
 
             If Not fichero Is Nothing Then
+                Dim gridProgreso As Grid = pagina.FindName("gridProgreso")
+                Interfaz.Pestañas.Visibilidad_Pestañas(gridProgreso, Nothing)
+
                 If fichero.FileType.Contains(".log") Then
                     Dim stream As IRandomAccessStreamWithContentType = Await fichero.OpenReadAsync()
                     Dim stream2 As Stream = stream.AsStreamForRead
@@ -321,20 +309,17 @@ Module Discord
 
             If Not listaJuegos Is Nothing Then
                 If listaJuegos.Count > 0 Then
-                    StorageApplicationPermissions.FutureAccessList.AddOrReplace("DiscordFichero", fichero)
+                    StorageApplicationPermissions.FutureAccessList.AddOrReplace(clave2, fichero)
                 End If
             End If
         End If
 
         Await helper.SaveFileAsync(Of List(Of Tile))("juegos" + modo.ToString, listaJuegos)
 
-        Dim iconoResultado As FontAwesome5.FontAwesome = pagina.FindName("iconoResultado")
-
         If Not listaJuegos Is Nothing Then
             If listaJuegos.Count > 0 Then
                 Dim gridJuegos As Grid = pagina.FindName("gridJuegos")
                 Interfaz.Pestañas.Visibilidad_Pestañas(gridJuegos, recursos.GetString("Games"))
-                iconoResultado.Icon = FontAwesome5.EFontAwesomeIcon.Solid_Check
 
                 listaJuegos.Sort(Function(x, y) x.Titulo.CompareTo(y.Titulo))
 
@@ -346,17 +331,11 @@ Module Discord
             Else
                 Dim gridAvisoNoJuegos As Grid = pagina.FindName("gridAvisoNoJuegos")
                 Interfaz.Pestañas.Visibilidad_Pestañas(gridAvisoNoJuegos, Nothing)
-                iconoResultado.Icon = Nothing
             End If
         Else
             Dim gridAvisoNoJuegos As Grid = pagina.FindName("gridAvisoNoJuegos")
             Interfaz.Pestañas.Visibilidad_Pestañas(gridAvisoNoJuegos, Nothing)
-            iconoResultado.Icon = Nothing
         End If
-
-        cbTiles.IsEnabled = True
-        sp1.IsHitTestVisible = True
-        sp2.IsHitTestVisible = True
 
         Configuracion.Estado(True)
         Cache.Estado(True)

@@ -453,7 +453,7 @@ Namespace Interfaz
             tbCambiarImagenEnlaceTilePequeña.Text = String.Empty
 
             Dim cbCambiarImagenAjusteTilePequeña As ComboBox = pagina.FindName("cbCambiarImagenAjusteTilePequeña")
-            cbCambiarImagenAjusteTilePequeña.SelectedIndex = 0
+            cbCambiarImagenAjusteTilePequeña.SelectedIndex = 2
 
             Dim sliderCambiarImagenMargenTilePequeña As Slider = pagina.FindName("sliderCambiarImagenMargenTilePequeña")
             sliderCambiarImagenMargenTilePequeña.Value = 0

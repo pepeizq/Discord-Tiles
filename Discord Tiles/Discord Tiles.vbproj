@@ -123,7 +123,6 @@
     <Compile Include="Modulos\Discord.vb" />
     <Compile Include="Modulos\Configuracion.vb" />
     <Compile Include="Modulos\Decompiladores.vb" />
-    <Compile Include="Modulos\DiscordBBDD.vb" />
     <Compile Include="Modulos\Interfaz\AñadirTile.vb" />
     <Compile Include="Modulos\Interfaz\Busqueda.vb" />
     <Compile Include="Modulos\Interfaz\EfectosHover.vb" />
@@ -159,6 +158,17 @@
     <Content Include="Assets\Iconos\3.png" />
     <Content Include="Assets\Iconos\4.png" />
     <Content Include="Assets\Iconos\5.png" />
+    <Content Include="Assets\Juegos\448417850466762753_ancha.png" />
+    <Content Include="Assets\Juegos\448417850466762753_grande.jpg" />
+    <Content Include="Assets\Juegos\448417850466762753_logo.png" />
+    <Content Include="Assets\Juegos\460940655984771072_ancha.jpg" />
+    <Content Include="Assets\Juegos\460940655984771072_grande.png" />
+    <Content Include="Assets\Juegos\469807750084296716_ancha.jpg" />
+    <Content Include="Assets\Juegos\469807750084296716_grande.png" />
+    <Content Include="Assets\Juegos\487683851519393822_grande.png" />
+    <Content Include="Assets\Juegos\487683851519393822_logo.png" />
+    <Content Include="Assets\Juegos\492162663976140810_grande.png" />
+    <Content Include="Assets\Juegos\492162663976140810_logo.png" />
     <Content Include="Assets\Logos\BadgeLogo.scale-100.png" />
     <Content Include="Assets\Logos\BadgeLogo.scale-125.png" />
     <Content Include="Assets\Logos\BadgeLogo.scale-150.png" />

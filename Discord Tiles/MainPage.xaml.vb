@@ -52,26 +52,4 @@
 
     End Sub
 
-
-
-    'CONFIG-----------------------------------------------------------------------------
-
-    Private Sub CbConfigModosTiles_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles cbConfigModosTiles.SelectionChanged
-
-        Configuracion.ModoTiles(cbConfigModosTiles.SelectedIndex, False)
-
-    End Sub
-
-    Private Sub BotonAñadirCarpeta_Click(sender As Object, e As RoutedEventArgs) Handles botonAñadirCarpeta.Click
-
-        Discord.Generar(True)
-
-    End Sub
-
-    Private Sub BotonAñadirCarpeta2_Click(sender As Object, e As RoutedEventArgs) Handles botonAñadirCarpeta2.Click
-
-        Discord.Generar(True)
-
-    End Sub
-
 End Class

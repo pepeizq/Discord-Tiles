@@ -231,7 +231,19 @@
   <data name="Disabled" xml:space="preserve">
     <value>Desactivado</value>
   </data>
-  <data name="Discord_ConfigMessage.Text" xml:space="preserve">
+  <data name="Discord_ConfigImport.Text" xml:space="preserve">
+    <value>Selecciona de donde vas a importar los juegos:</value>
+  </data>
+  <data name="Discord_ConfigImport1" xml:space="preserve">
+    <value>Juegos instalados en Discord</value>
+  </data>
+  <data name="Discord_ConfigImport2" xml:space="preserve">
+    <value>Juegos importados de Steam</value>
+  </data>
+  <data name="Discord_ConfigMessage1.Text" xml:space="preserve">
+    <value>Selecciona la carpeta donde tengas instalados tus juegos de Discord:</value>
+  </data>
+  <data name="Discord_ConfigMessage2.Text" xml:space="preserve">
     <value>Seleciona el fichero con extensión .log en: C:\Users\[your user]\AppData\Roaming\discord\Local Storage\leveldb</value>
   </data>
   <data name="Discord_Message.Text" xml:space="preserve">
@@ -239,6 +251,12 @@
   </data>
   <data name="Discord_OpenTiles.Text" xml:space="preserve">
     <value>Mostrar Apps</value>
+  </data>
+  <data name="Discord_StoreDescription" xml:space="preserve">
+    <value>Añade Tiles de tus juegos de la app de Discord en el Menú Inicio de Windows 10.</value>
+  </data>
+  <data name="Discord_StoreTags" xml:space="preserve">
+    <value>Discord,Steam</value>
   </data>
   <data name="Discord_Title" xml:space="preserve">
     <value>Tiles para los juegos de Discord</value>

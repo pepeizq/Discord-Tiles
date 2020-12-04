@@ -567,69 +567,51 @@
                                 </Grid.ColumnDefinitions>
 
                                 <iconos:FontAwesome Grid.Column="0" Icon="Solid_ChevronRight" Foreground="White" FontSize="15"/>
-                                <TextBlock x:Uid="Discord_ConfigMessage" Grid.Column="1" Foreground="White" TextWrapping="Wrap" Margin="15,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                <TextBlock x:Uid="Discord_ConfigImport" Grid.Column="1" Foreground="White" TextWrapping="Wrap" Margin="15,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                             </Grid>
 
+                            <ComboBox x:Name="cbDiscordConfigModosTiles" Margin="20,20,0,0"/>
 
-                            <ComboBox x:Name="cbConfigModosTiles">
-                                <ComboBoxItem x:Uid="ConfigTileMode1"/>
-                                <ComboBoxItem x:Uid="ConfigTileMode2"/>
-                            </ComboBox>
-
-                            <StackPanel x:Name="spModoTile1" Margin="0,20,0,0" Visibility="Collapsed">
-                                <TextBlock x:Uid="ConfigFolderMessage" TextWrapping="Wrap" Margin="0,0,0,5"/>
-
-                                <Button x:Name="botonAñadirCarpeta" Padding="10" Margin="0,10" Background="{StaticResource BrushSecundario}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <iconos:FontAwesome Icon="Solid_Folder" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="White"/>
-                                        <TextBlock x:Name="botonAñadirCarpetaTexto" x:Uid="ConfigAddFolder" Foreground="White"/>
-                                    </StackPanel>
-                                </Button>
-
-                                <TextBlock x:Name="tbConfigCarpeta" VerticalAlignment="Center"/>
-                            </StackPanel>
-
-                            <StackPanel x:Name="spModoTile2" Margin="0,20,0,0" Visibility="Collapsed">
-                                <TextBlock x:Uid="ConfigFolderMessage2" TextWrapping="Wrap" Margin="0,0,0,5"/>
-
-                                <Button x:Name="botonAñadirCarpeta2" Padding="10" Margin="0,10" Background="{StaticResource BrushSecundario}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <iconos:FontAwesome Icon="Solid_Folder" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="White"/>
-                                        <TextBlock x:Name="botonAñadirCarpetaTexto2" x:Uid="ConfigFindFile" Foreground="White"/>
-                                    </StackPanel>
-                                </Button>
-
-                                <Grid Padding="15" Background="{StaticResource ColorCajaRojaFondo}" Margin="0,10,0,0">
+                            <StackPanel x:Name="spDiscordConfigModo1" Orientation="Vertical" Visibility="Collapsed">
+                                <Grid Margin="0,30,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <iconos:FontAwesome Grid.Column="0" Icon="Solid_Exclamation" Margin="5,0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Width="20"/>
-                                    <TextBlock x:Uid="ConfigFolderWarning" Grid.Column="1" Margin="10,0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White"/>
-
-                                    <controls:DropShadowPanel Grid.Column="2" Color="{StaticResource ColorCajaRojaSombra}" ShadowOpacity="0.3" BlurRadius="5">
-                                        <Button x:Name="botonComoAñadirCarpeta" Padding="0">
-                                            <Button.Content>
-                                                <StackPanel Orientation="Horizontal" Padding="8" Background="{StaticResource ColorCajaRojaBoton}">
-                                                    <TextBlock x:Uid="ConfigFolderHowAdd" Foreground="White"/>
-                                                </StackPanel>
-                                            </Button.Content>
-                                        </Button>
-                                    </controls:DropShadowPanel>
+                                    <iconos:FontAwesome Grid.Column="0" Icon="Solid_ChevronRight" Foreground="White" FontSize="15"/>
+                                    <TextBlock x:Uid="Discord_ConfigMessage1" Grid.Column="1" Foreground="White" TextWrapping="Wrap" Margin="15,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                                 </Grid>
-                            </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
-                                <Button x:Name="botonBuscarFicheroTwitch" Style="{ThemeResource ButtonRevealStyle}" Background="{StaticResource ColorCuarto}" Padding="18,15" BorderThickness="0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <iconos:FontAwesome Icon="Solid_File" Margin="0,0,15,0" VerticalAlignment="Center" Foreground="White"/>
-                                        <TextBlock x:Uid="ConfigSearchFile" Foreground="White"/>
-                                    </StackPanel>
-                                </Button>
+                                <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
+                                    <Button x:Name="botonBuscarCarpetaDiscord" Style="{ThemeResource ButtonRevealStyle}" Background="{StaticResource ColorCuarto}" Padding="18,15" BorderThickness="0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <iconos:FontAwesome Icon="Solid_Folder" Margin="0,0,15,0" VerticalAlignment="Center" Foreground="White"/>
+                                            <TextBlock x:Uid="ConfigSearchFolder" Foreground="White"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel> 
 
-                                <iconos:FontAwesome x:Name="iconoResultado" Foreground="White" Margin="25,0,0,0" FontSize="16" VerticalAlignment="Center"/>
+                            <StackPanel x:Name="spDiscordConfigModo2" Orientation="Vertical" Visibility="Collapsed">
+                                <Grid Margin="0,30,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <iconos:FontAwesome Grid.Column="0" Icon="Solid_ChevronRight" Foreground="White" FontSize="15"/>
+                                    <TextBlock x:Uid="Discord_ConfigMessage2" Grid.Column="1" Foreground="White" TextWrapping="Wrap" Margin="15,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
+                                    <Button x:Name="botonBuscarFicheroDiscord" Style="{ThemeResource ButtonRevealStyle}" Background="{StaticResource ColorCuarto}" Padding="18,15" BorderThickness="0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <iconos:FontAwesome Icon="Solid_File" Margin="0,0,15,0" VerticalAlignment="Center" Foreground="White"/>
+                                            <TextBlock x:Uid="ConfigSearchFile" Foreground="White"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
                             </StackPanel>
 
                             <Grid BorderBrush="{StaticResource ColorPrimario}" BorderThickness="0,1,0,0" Margin="0,50"/>
