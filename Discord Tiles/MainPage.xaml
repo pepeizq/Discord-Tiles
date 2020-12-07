@@ -570,7 +570,7 @@
                                 <TextBlock x:Uid="Discord_ConfigImport" Grid.Column="1" Foreground="White" TextWrapping="Wrap" Margin="15,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                             </Grid>
 
-                            <ComboBox x:Name="cbDiscordConfigModosTiles" Margin="20,20,0,0"/>
+                            <ComboBox x:Name="cbDiscordConfigModosTiles" Margin="20,20,0,0" RequestedTheme="Dark"/>
 
                             <StackPanel x:Name="spDiscordConfigModo1" Orientation="Vertical" Visibility="Collapsed">
                                 <Grid Margin="0,30,0,0">
