@@ -45,6 +45,10 @@ Module Discord
             listaJuegos = Await helper.ReadFileAsync(Of List(Of Tile))("juegos" + modo.ToString)
         End If
 
+        If listaJuegos Is Nothing Then
+            listaJuegos = New List(Of Tile)
+        End If
+
         If modo = 0 Then
             Dim carpeta As StorageFolder = Nothing
 
@@ -311,7 +315,11 @@ Module Discord
             End If
         End If
 
-        Await helper.SaveFileAsync(Of List(Of Tile))("juegos" + modo.ToString, listaJuegos)
+        Try
+            Await helper.SaveFileAsync(Of List(Of Tile))("juegos" + modo.ToString, listaJuegos)
+        Catch ex As Exception
+
+        End Try
 
         If Not listaJuegos Is Nothing Then
             If listaJuegos.Count > 0 Then
