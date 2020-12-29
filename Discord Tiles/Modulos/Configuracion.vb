@@ -78,7 +78,7 @@ Module Configuracion
         Dim gridConfig As Grid = pagina.FindName("gridConfig")
 
         Dim recursos As New Resources.ResourceLoader()
-        Interfaz.Pestañas.Visibilidad_Pestañas(gridConfig, recursos.GetString("Config"))
+        Interfaz.Pestañas.Visibilidad(gridConfig, recursos.GetString("Config"), sender)
 
     End Sub
 
@@ -87,10 +87,8 @@ Module Configuracion
         Dim frame As Frame = Window.Current.Content
         Dim pagina As Page = frame.Content
 
-        Dim gridMasTiles As Grid = pagina.FindName("gridMasTiles")
-
-        Dim recursos As New Resources.ResourceLoader()
-        Interfaz.Pestañas.Visibilidad_Pestañas(gridMasTiles, recursos.GetString("MoreTiles"))
+        Dim botonMasTiles As Button = pagina.FindName("botonMasTiles")
+        botonMasTiles.Flyout.ShowAt(botonMasTiles)
 
     End Sub
 
