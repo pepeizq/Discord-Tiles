@@ -415,7 +415,7 @@
     <value>Discord,Steam</value>
   </data>
   <data name="Discord_Title" xml:space="preserve">
-    <value>Tiles for Discord Games</value>
+    <value>Tiles for Discord Games (Old)</value>
   </data>
   <data name="Gog_ConfigMessage.Text" xml:space="preserve">
     <value>Select the folder: C:\ProgramData\GOG.com\Galaxy\webcache\[Your ID User]\gog</value>
